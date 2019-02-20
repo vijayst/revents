@@ -1,7 +1,7 @@
 import React from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
 
-export default function EventForm() {
+export default function EventForm(props) {
     return (
         <Segment>
             <Form>
@@ -28,7 +28,7 @@ export default function EventForm() {
                 <Button positive type="submit">
                     Submit
                 </Button>
-                <Button type="button">Cancel</Button>
+                <Button type="button" onClick={props.onCancel}>Cancel</Button>
             </Form>
         </Segment>
     );

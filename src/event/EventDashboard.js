@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, Button } from 'semantic-ui-react';
 import EventList from './EventList';
 import EventForm from './EventForm';
 
-const events = [
+const mockEvents = [
     {
       id: '1',
       title: 'Trip to Tower of London',
@@ -55,14 +55,25 @@ const events = [
   ]
 
 export default function EventDashboard() {
+    const [events] = useState(mockEvents);
+    const [isOpen, setIsOpen] = useState(false);
+
+    function handleOpen() {
+        setIsOpen(true);
+    }
+
+    function handleClose() {
+        setIsOpen(false);
+    }
+
     return (
         <Grid>
             <Grid.Column width={10}>
                 <EventList events={events} />
             </Grid.Column>
             <Grid.Column width={6}>
-                <Button positive content="Create Event" />
-                <EventForm />
+                <Button positive content="Create Event" onClick={handleOpen} />
+                {isOpen && <EventForm onCancel={handleClose} />}
             </Grid.Column>
         </Grid>
     );

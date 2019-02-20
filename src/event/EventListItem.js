@@ -35,7 +35,8 @@ export default function EventListItem(props) {
             </Segment>
             <Segment clearing>
                 <span>{description}</span>
-                <Button as="a" color="teal" floated="right" content="View" />
+                <Button as="a" color="red" floated="right" content="Delete" onClick={props.onDelete} />
+                <Button as="a" color="teal" floated="right" content="View" onClick={props.onEdit} />
             </Segment>
         </Segment.Group>
     );

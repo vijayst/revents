@@ -58,8 +58,10 @@ const mockEvents = [
 export default function EventDashboard() {
     let [events, setEvents] = useState(mockEvents);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
     function handleOpen() {
+        setSelectedEvent(null);
         setIsOpen(true);
     }
 
@@ -77,15 +79,36 @@ export default function EventDashboard() {
         setIsOpen(false);
     }
 
+    function handleEdit(event) {
+        setSelectedEvent(event);
+        setIsOpen(true);
+    }
+
+    function handleUpdate(event) {
+        events = events.slice();
+        const index = events.findIndex(e => e.id === selectedEvent.id);
+        events[index] = {
+            ...events[index],
+            ...event
+        };
+        setEvents(events);
+        setIsOpen(false);
+    }
+
+    function handleDelete(eventId) {
+        events = events.filter(e => e.id !== eventId);
+        setEvents(events);
+    }
+
     return (
         <Grid>
             <Grid.Column width={10}>
-                <EventList events={events} />
+                <EventList events={events} onEdit={handleEdit} onDelete={handleDelete} />
             </Grid.Column>
             <Grid.Column width={6}>
                 <Button positive content="Create Event" onClick={handleOpen} />
                 {isOpen && (
-                    <EventForm onCancel={handleClose} onCreate={handleCreate} />
+                    <EventForm onCancel={handleClose} onCreate={handleCreate} onUpdate={handleUpdate} selectedEvent={selectedEvent} />
                 )}
             </Grid.Column>
         </Grid>

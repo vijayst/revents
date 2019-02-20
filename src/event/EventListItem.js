@@ -3,17 +3,18 @@ import { Segment, Item, Icon, List, Button } from 'semantic-ui-react';
 import EventListAttendee from './EventListAttendee'
 
 
-export default function EventListItem() {
+export default function EventListItem(props) {
+    const { title, description, date, venue, hostedBy, hostPhotoURL, attendees } = props.event;
     return (
         <Segment.Group>
             <Segment>
                 <Item.Group>
                     <Item>
-                        <Item.Image size="tiny" circular src="https://randomuser.me/api/portraits/women/42.jpg" />
+                        <Item.Image size="tiny" circular src={hostPhotoURL} />
                         <Item.Content>
-                            <Item.Header as="a">Event Title</Item.Header>
+                            <Item.Header as="a">{title}</Item.Header>
                             <Item.Description>
-                                Hosted by <a>hosted by</a>
+                                Hosted by <a>{hostedBy}</a>
                             </Item.Description>
                         </Item.Content>
                     </Item>
@@ -21,15 +22,19 @@ export default function EventListItem() {
             </Segment>
             <Segment>
                 <span>
-                    <Icon name="clock" /> date |
-                    <Icon name="marker" /> time
+                    <Icon name="clock" /> {date} |
+                    <Icon name="marker" /> {venue}
                 </span>
             </Segment>
             <Segment secondary>
-                <List horizontal><EventListAttendee /><EventListAttendee /><EventListAttendee /></List>
+                <List horizontal>
+                    {attendees.map(attendee => (
+                        <EventListAttendee key={attendee.id} attendee={attendee} />
+                    ))}
+                </List>
             </Segment>
             <Segment clearing>
-                <span>Event description will go here!</span>
+                <span>{description}</span>
                 <Button as="a" color="teal" floated="right" content="View" />
             </Segment>
         </Segment.Group>

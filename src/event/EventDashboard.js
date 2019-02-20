@@ -3,6 +3,7 @@ import { Grid, Button } from 'semantic-ui-react';
 import EventList from './EventList';
 import EventForm from './EventForm';
 import cuid from 'cuid';
+import { connect } from 'react-redux';
 
 const mockEvents = [
     {
@@ -55,7 +56,7 @@ const mockEvents = [
     }
 ];
 
-export default function EventDashboard() {
+function EventDashboard(props) {
     let [events, setEvents] = useState(mockEvents);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -107,6 +108,7 @@ export default function EventDashboard() {
             </Grid.Column>
             <Grid.Column width={6}>
                 <Button positive content="Create Event" onClick={handleOpen} />
+                <div>{props.test}</div>
                 {isOpen && (
                     <EventForm onCancel={handleClose} onCreate={handleCreate} onUpdate={handleUpdate} selectedEvent={selectedEvent} />
                 )}
@@ -114,3 +116,11 @@ export default function EventDashboard() {
         </Grid>
     );
 }
+
+function mapStateToProps(state) {
+    return {
+        test: state.test
+    };
+}
+
+export default connect(mapStateToProps)(EventDashboard);

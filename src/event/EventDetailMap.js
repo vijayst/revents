@@ -9,7 +9,7 @@ export default function EventDetailMap(props) {
             <div style={{ height: '300px', width: '100%' }}>
                 <GoogleMapReact
                     bootstrapURLKeys={{
-                        key: 'AIzaSyDo59xXqSCiG8d4_Fw6zYsDwCsjh2oRcsQ'
+                        key: process.env.REACT_APP_GOOGLE_KEY
                     }}
                     defaultCenter={props.center}
                     defaultZoom={zoom}

@@ -1,130 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import { Segment, Form, Button } from 'semantic-ui-react';
+import React from 'react';
+import { Segment, Form, Button, Grid, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createEvent, updateEvent } from './actions';
 import cuid from 'cuid';
+import { Field, reduxForm } from 'redux-form';
+import TextInput from '../common/TextInput';
+import TextArea from '../common/TextArea';
+import SelectInput from '../common/SelectInput';
+
+const categories = [
+    {key: 'drinks', text: 'Drinks', value: 'drinks'},
+    {key: 'culture', text: 'Culture', value: 'culture'},
+    {key: 'film', text: 'Film', value: 'film'},
+    {key: 'food', text: 'Food', value: 'food'},
+    {key: 'music', text: 'Music', value: 'music'},
+    {key: 'travel', text: 'Travel', value: 'travel'},
+];
 
 function EventForm(props) {
-    const { event } = props;
-    const [title, setTitle] = useState('');
-    const [date, setDate] = useState('');
-    const [city, setCity] = useState('');
-    const [venue, setVenue] = useState('');
-    const [host, setHost] = useState('');
-
-    useEffect(() => {
-        setTitle(event ? event.title : '');
-        setDate(event ? event.date : '');
-        setCity(event ? event.city : '');
-        setVenue(event ? event.venue : '');
-        setHost(event ? event.hostedBy : '');
-    }, [event]);
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        const action = event ? props.onUpdate : props.onCreate;
-        const id = event ? event.id : cuid();
-        const hostPhotoURL = event ? event.hostPhotoURL : '/assets/user.png';
-        const attendees = event ? event.attendees : [];
-        action({
-            id,
-            title,
-            date,
-            city,
-            venue,
-            hostedBy: host,
-            hostPhotoURL,
-            attendees
-        });
-        event ? 
-        props.history.goBack() :
-        props.history.push('/events');
-    }
-
-    function handleTitleChange(e) {
-        setTitle(e.target.value);
-    }
-
-    function handleDateChange(e) {
-        setDate(e.target.value);
-    }
-
-    function handleCityChange(e) {
-        setCity(e.target.value);
-    }
-
-    function handleVenueChange(e) {
-        setVenue(e.target.value);
-    }
-
-    function handleHostChange(e) {
-        setHost(e.target.value);
+    
+    function handleSubmit(values) {
+        const event = Object.assign({}, values);
+        if (props.initialValues) {
+            props.onUpdate(event)
+            props.history.goBack();
+        } else {
+            event.id = cuid();
+            event.hostPhotoURL = '/assets/user.png';
+            event.attendees = [];
+            event.hostedBy = 'Bob';
+            props.onCreate(event);
+            props.history.push('/events');
+        }
     }
 
     return (
-        <Segment>
-            <Form onSubmit={handleSubmit}>
-                <Form.Field>
-                    <label>Event Title</label>
-                    <input
-                        placeholder="Event Title"
-                        value={title}
-                        onChange={handleTitleChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Event Date</label>
-                    <input
-                        type="date"
-                        placeholder="Event Date"
-                        value={date}
-                        onChange={handleDateChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>City</label>
-                    <input
-                        placeholder="City event is taking place"
-                        value={city}
-                        onChange={handleCityChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Venue</label>
-                    <input
-                        placeholder="Enter the Venue of the event"
-                        value={venue}
-                        onChange={handleVenueChange}
-                    />
-                </Form.Field>
-                <Form.Field>
-                    <label>Hosted By</label>
-                    <input
-                        placeholder="Enter the name of person hosting"
-                        value={host}
-                        onChange={handleHostChange}
-                    />
-                </Form.Field>
-                <Button positive type="submit">
-                    Submit
-                </Button>
-                <Button type="button" onClick={props.history.goBack}>
-                    Cancel
-                </Button>
-            </Form>
-        </Segment>
+        <Grid>
+            <Grid.Column width={10}>
+                <Segment>
+                    <Form onSubmit={props.handleSubmit(handleSubmit)}>
+                        <Header sub color="teal">
+                            Event Details
+                        </Header>
+                        <Field
+                            name="title"
+                            type="text"
+                            component={TextInput}
+                            placeholder="Event title"
+                        />
+                        <Field
+                            name="category"
+                            component={SelectInput}
+                            placeholder="Event category"
+                            options={categories}
+                        />
+                        <Field
+                            name="description"
+                            type="text"
+                            component={TextArea}
+                            rows={3}
+                            placeholder="Event description"
+                        />
+                        <Header sub color="teal">
+                            Event Location
+                        </Header>
+                        <Field
+                            name="city"
+                            type="text"
+                            component={TextInput}
+                            placeholder="Event city"
+                        />
+                        <Field
+                            name="venue"
+                            type="text"
+                            component={TextInput}
+                            placeholder="Event venue"
+                        />
+                        <Field
+                            name="date"
+                            type="text"
+                            component={TextInput}
+                            placeholder="Event date"
+                        />
+                        <Button positive type="submit">
+                            Submit
+                        </Button>
+                        <Button type="button" onClick={props.history.goBack}>
+                            Cancel
+                        </Button>
+                    </Form>
+                </Segment>
+            </Grid.Column>
+        </Grid>
     );
 }
 
 function mapStateToProps(state, ownProps) {
     const eventId = ownProps.match.params.id;
     const event = state.events.find(e => e.id === eventId);
-    return { event };
+    return { initialValues: event };
 }
 
 const dispatchProps = {
     onCreate: createEvent,
     onUpdate: updateEvent
-}
+};
 
-export default connect(mapStateToProps, dispatchProps)(EventForm);
+export default connect(
+    mapStateToProps,
+    dispatchProps
+)(reduxForm({ form: 'eventForm', enableReinitialize: true })(EventForm));

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Segment, Form, Button } from 'semantic-ui-react';
+import { connect } from 'react-redux';
+import { createEvent, updateEvent } from './actions';
+import cuid from 'cuid';
 
-export default function EventForm(props) {
-    const { selectedEvent: event } = props;
+function EventForm(props) {
+    const { event } = props;
     const [title, setTitle] = useState('');
     const [date, setDate] = useState('');
     const [city, setCity] = useState('');
@@ -20,13 +23,22 @@ export default function EventForm(props) {
     function handleSubmit(e) {
         e.preventDefault();
         const action = event ? props.onUpdate : props.onCreate;
+        const id = event ? event.id : cuid();
+        const hostPhotoURL = event ? event.hostPhotoURL : '/assets/user.png';
+        const attendees = event ? event.attendees : [];
         action({
+            id,
             title,
             date,
             city,
             venue,
-            hostedBy: host
+            hostedBy: host,
+            hostPhotoURL,
+            attendees
         });
+        event ? 
+        props.history.goBack() :
+        props.history.push('/events');
     }
 
     function handleTitleChange(e) {
@@ -96,10 +108,23 @@ export default function EventForm(props) {
                 <Button positive type="submit">
                     Submit
                 </Button>
-                <Button type="button" onClick={props.onCancel}>
+                <Button type="button" onClick={props.history.goBack}>
                     Cancel
                 </Button>
             </Form>
         </Segment>
     );
 }
+
+function mapStateToProps(state, ownProps) {
+    const eventId = ownProps.match.params.id;
+    const event = state.events.find(e => e.id === eventId);
+    return { event };
+}
+
+const dispatchProps = {
+    onCreate: createEvent,
+    onUpdate: updateEvent
+}
+
+export default connect(mapStateToProps, dispatchProps)(EventForm);

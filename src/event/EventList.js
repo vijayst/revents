@@ -8,7 +8,6 @@ export default function EventList(props) {
                 <EventListItem
                     key={event.id}
                     event={event}
-                    onEdit={props.onEdit.bind(null, event)}
                     onDelete={props.onDelete.bind(null, event.id)}
                 />
             ))}

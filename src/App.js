@@ -37,6 +37,10 @@ class App extends Component {
                                             component={EventForm}
                                         />
                                         <Route
+                                            path="/event/manage/:id"
+                                            component={EventForm}
+                                        />
+                                        <Route
                                             path="/event/:id"
                                             component={EventDetail}
                                         />

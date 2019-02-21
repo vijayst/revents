@@ -7,6 +7,7 @@ import { Field, reduxForm } from 'redux-form';
 import TextInput from '../common/TextInput';
 import TextArea from '../common/TextArea';
 import SelectInput from '../common/SelectInput';
+import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
 
 const categories = [
     {key: 'drinks', text: 'Drinks', value: 'drinks'},
@@ -16,6 +17,17 @@ const categories = [
     {key: 'music', text: 'Music', value: 'music'},
     {key: 'travel', text: 'Travel', value: 'travel'},
 ];
+
+const validate = combineValidators({
+    title: isRequired({ message: 'Event title is required' }),
+    category: isRequired({ message: 'Please provide a category' }),
+    description: composeValidators(
+        isRequired({ message: 'Please enter a description' }),
+        hasLengthGreaterThan(4)({ message: 'Please enter more than 5 characters in description' })
+    )(),
+    city: isRequired('city'),
+    venue: isRequired('venue')
+});
 
 function EventForm(props) {
     
@@ -33,6 +45,8 @@ function EventForm(props) {
             props.history.push('/events');
         }
     }
+
+    const { invalid, pristine, submitting } = props;
 
     return (
         <Grid>
@@ -82,7 +96,7 @@ function EventForm(props) {
                             component={TextInput}
                             placeholder="Event date"
                         />
-                        <Button positive type="submit">
+                        <Button disabled={pristine || invalid || submitting} positive type="submit">
                             Submit
                         </Button>
                         <Button type="button" onClick={props.history.goBack}>
@@ -109,4 +123,4 @@ const dispatchProps = {
 export default connect(
     mapStateToProps,
     dispatchProps
-)(reduxForm({ form: 'eventForm', enableReinitialize: true })(EventForm));
+)(reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(EventForm));

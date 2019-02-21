@@ -6,7 +6,6 @@ import cuid from 'cuid';
 import { connect } from 'react-redux';
 import { createEvent, updateEvent, deleteEvent } from './actions';
 
-
 function EventDashboard(props) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
@@ -46,12 +45,21 @@ function EventDashboard(props) {
     return (
         <Grid>
             <Grid.Column width={10}>
-                <EventList events={props.events} onEdit={handleEdit} onDelete={handleDelete} />
+                <EventList
+                    events={props.events}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
             </Grid.Column>
             <Grid.Column width={6}>
                 <Button positive content="Create Event" onClick={handleOpen} />
                 {isOpen && (
-                    <EventForm onCancel={handleClose} onCreate={handleCreate} onUpdate={handleUpdate} selectedEvent={selectedEvent} />
+                    <EventForm
+                        onCancel={handleClose}
+                        onCreate={handleCreate}
+                        onUpdate={handleUpdate}
+                        selectedEvent={selectedEvent}
+                    />
                 )}
             </Grid.Column>
         </Grid>
@@ -68,6 +76,9 @@ const dispatchProps = {
     onCreate: createEvent,
     onUpdate: updateEvent,
     onDelete: deleteEvent
-}
+};
 
-export default connect(mapStateToProps, dispatchProps)(EventDashboard);
+export default connect(
+    mapStateToProps,
+    dispatchProps
+)(EventDashboard);

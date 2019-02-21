@@ -7,6 +7,7 @@ import { Field, reduxForm } from 'redux-form';
 import TextInput from '../common/TextInput';
 import TextArea from '../common/TextArea';
 import SelectInput from '../common/SelectInput';
+import DateInput from '../common/DateInput';
 import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
 
 const categories = [
@@ -26,7 +27,8 @@ const validate = combineValidators({
         hasLengthGreaterThan(4)({ message: 'Please enter more than 5 characters in description' })
     )(),
     city: isRequired('city'),
-    venue: isRequired('venue')
+    venue: isRequired('venue'),
+    date: isRequired('date')
 });
 
 function EventForm(props) {
@@ -93,8 +95,11 @@ function EventForm(props) {
                         <Field
                             name="date"
                             type="text"
-                            component={TextInput}
-                            placeholder="Event date"
+                            component={DateInput}
+                            placeholder="Event date and time"
+                            dateFormat="YYYY-MM-dd HH:mm"
+                            timeFormat="HH:mm"
+                            showTimeSelect
                         />
                         <Button disabled={pristine || invalid || submitting} positive type="submit">
                             Submit

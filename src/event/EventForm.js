@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Segment, Form, Button, Grid, Header } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { createEvent, updateEvent } from './actions';
@@ -9,15 +9,21 @@ import TextArea from '../common/TextArea';
 import SelectInput from '../common/SelectInput';
 import DateInput from '../common/DateInput';
 import PlaceInput from '../common/PlaceInput';
-import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
+import {
+    combineValidators,
+    composeValidators,
+    isRequired,
+    hasLengthGreaterThan
+} from 'revalidate';
+import { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
 
 const categories = [
-    {key: 'drinks', text: 'Drinks', value: 'drinks'},
-    {key: 'culture', text: 'Culture', value: 'culture'},
-    {key: 'film', text: 'Film', value: 'film'},
-    {key: 'food', text: 'Food', value: 'food'},
-    {key: 'music', text: 'Music', value: 'music'},
-    {key: 'travel', text: 'Travel', value: 'travel'},
+    { key: 'drinks', text: 'Drinks', value: 'drinks' },
+    { key: 'culture', text: 'Culture', value: 'culture' },
+    { key: 'film', text: 'Film', value: 'film' },
+    { key: 'food', text: 'Food', value: 'food' },
+    { key: 'music', text: 'Music', value: 'music' },
+    { key: 'travel', text: 'Travel', value: 'travel' }
 ];
 
 const validate = combineValidators({
@@ -25,7 +31,9 @@ const validate = combineValidators({
     category: isRequired({ message: 'Please provide a category' }),
     description: composeValidators(
         isRequired({ message: 'Please enter a description' }),
-        hasLengthGreaterThan(4)({ message: 'Please enter more than 5 characters in description' })
+        hasLengthGreaterThan(4)({
+            message: 'Please enter more than 5 characters in description'
+        })
     )(),
     city: isRequired('city'),
     venue: isRequired('venue'),
@@ -33,11 +41,32 @@ const validate = combineValidators({
 });
 
 function EventForm(props) {
-    
+    const [cityLatLng, setCityLatLng] = useState('');
+    const [venueLatLng, setVenueLatLng] = useState('');
+
+    function handleCitySelect(address) {
+        geocodeByAddress(address)
+            .then(results => getLatLng(results[0]))
+            .then(latLng => setCityLatLng(latLng))
+            .then(() => {
+                props.change('city', address);
+            });
+    }
+
+    function handleVenueSelect(address) {
+        geocodeByAddress(address)
+            .then(results => getLatLng(results[0]))
+            .then(latLng => setVenueLatLng(latLng))
+            .then(() => {
+                props.change('venue', address);
+            });
+    }
+
     function handleSubmit(values) {
         const event = Object.assign({}, values);
+        event.venueLatLng = venueLatLng;
         if (props.initialValues) {
-            props.onUpdate(event)
+            props.onUpdate(event);
             props.history.goBack();
         } else {
             event.id = cuid();
@@ -87,13 +116,19 @@ function EventForm(props) {
                             component={PlaceInput}
                             options={{ types: ['(cities)'] }}
                             placeholder="Event city"
+                            onSelect={handleCitySelect}
                         />
                         <Field
                             name="venue"
                             type="text"
-                            options={{ types: ['establishment'] }}
+                            options={{
+                                location: new window.google.maps.LatLng(cityLatLng),
+                                radius: 10000,
+                                types: ['establishment']
+                            }}
                             component={PlaceInput}
                             placeholder="Event venue"
+                            onSelect={handleVenueSelect}
                         />
                         <Field
                             name="date"
@@ -104,7 +139,11 @@ function EventForm(props) {
                             timeFormat="HH:mm"
                             showTimeSelect
                         />
-                        <Button disabled={pristine || invalid || submitting} positive type="submit">
+                        <Button
+                            disabled={pristine || invalid || submitting}
+                            positive
+                            type="submit"
+                        >
                             Submit
                         </Button>
                         <Button type="button" onClick={props.history.goBack}>
@@ -131,4 +170,8 @@ const dispatchProps = {
 export default connect(
     mapStateToProps,
     dispatchProps
-)(reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(EventForm));
+)(
+    reduxForm({ form: 'eventForm', enableReinitialize: true, validate })(
+        EventForm
+    )
+);

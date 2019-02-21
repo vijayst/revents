@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Segment, Grid, Icon, Button } from 'semantic-ui-react';
+import EventDetailMap from './EventDetailMap';
 
 export default function EventDetailInfo(props) {
-    const { description, date, venue } = props.event;
+    const [showMap, setShowMap] = useState(false);
+    const { description, date, venue, venueLatLng } = props.event;
+
+    function handleToggleMap() {
+        setShowMap(!showMap);
+    }
+
     return (
         <Segment.Group>
             <Segment attached="top">
@@ -28,16 +35,17 @@ export default function EventDetailInfo(props) {
             <Segment attached>
                 <Grid verticalAlign="middle">
                     <Grid.Column width={1}>
-                        <Icon name="marker" size="large" color="teal" />
+                        <Icon name="marker" big="true" color="teal" />
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <span>{venue}</span>
                     </Grid.Column>
                     <Grid.Column width={4}>
-                        <Button color="teal" size="tiny" content="Show Map" />
+                        <Button color="teal" size="tiny" content={showMap ? 'Hide Map' : 'Show Map'} onClick={handleToggleMap} />
                     </Grid.Column>
                 </Grid>
             </Segment>
+            {showMap && <EventDetailMap center={venueLatLng} />}
         </Segment.Group>
     );
 }

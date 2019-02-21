@@ -8,6 +8,7 @@ import TextInput from '../common/TextInput';
 import TextArea from '../common/TextArea';
 import SelectInput from '../common/SelectInput';
 import DateInput from '../common/DateInput';
+import PlaceInput from '../common/PlaceInput';
 import { combineValidators, composeValidators, isRequired, hasLengthGreaterThan } from 'revalidate';
 
 const categories = [
@@ -83,13 +84,15 @@ function EventForm(props) {
                         <Field
                             name="city"
                             type="text"
-                            component={TextInput}
+                            component={PlaceInput}
+                            options={{ types: ['(cities)'] }}
                             placeholder="Event city"
                         />
                         <Field
                             name="venue"
                             type="text"
-                            component={TextInput}
+                            options={{ types: ['establishment'] }}
+                            component={PlaceInput}
                             placeholder="Event venue"
                         />
                         <Field

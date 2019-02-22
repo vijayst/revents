@@ -22,6 +22,7 @@ function SettingsDashboard(props) {
                         path="/settings/account"
                         render={() => (
                             <Account
+                                providerId={props.providerId}
                                 onPasswordChange={props.onPasswordChange}
                             />
                         )}
@@ -35,11 +36,18 @@ function SettingsDashboard(props) {
     );
 }
 
+function mapState(state) {
+    const { auth } = state.firebase;
+    return {
+        providerId: auth.isLoaded && auth.providerData[0].providerId
+    };
+}
+
 const dispatchProps = {
     onPasswordChange: changePassword
 };
 
 export default connect(
-    null,
+    mapState,
     dispatchProps
 )(SettingsDashboard);

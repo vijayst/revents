@@ -1,11 +1,15 @@
-import { LOGIN, LOGOUT } from "./constants";
+import { LOGIN, LOGOUT } from './constants';
+import { closeModal } from '../modals/actions';
 
 export function login(credentials) {
-    return {
-        type: LOGIN,
-        payload: {
-            credentials
-        }
+    return dispatch => {
+        dispatch({
+            type: LOGIN,
+            payload: {
+                credentials
+            }
+        });
+        dispatch(closeModal());
     };
 }
 

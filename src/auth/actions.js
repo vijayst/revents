@@ -25,10 +25,12 @@ export function register(formValues) {
     return async (dispatch, getState, getFirestore) => {
         try {
             const firestore = getFirestore();
-            const result = await firebase.auth().createUserWithEmailAndPassword(
-                formValues.email,
-                formValues.password
-            );
+            const result = await firebase
+                .auth()
+                .createUserWithEmailAndPassword(
+                    formValues.email,
+                    formValues.password
+                );
             await result.user.updateProfile({
                 displayName: formValues.displayName
             });
@@ -41,6 +43,20 @@ export function register(formValues) {
         } catch (err) {
             console.log(err);
             throw new SubmissionError({ _error: err.message });
+        }
+    };
+}
+
+export function socialLogin(selectedProvider) {
+    return async dispatch => {
+        try {
+            dispatch(closeModal());
+            await firebase.login({
+                provider: selectedProvider,
+                type: 'popup'
+            });
+        } catch (err) {
+            console.log(err);
         }
     };
 }

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Form, Segment, Button, Label} from 'semantic-ui-react';
+import { Form, Segment, Button, Label, Divider } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
 import TextInput from '../common/TextInput';
 import { connect } from 'react-redux';
-import { login } from './actions';
+import { login, socialLogin } from './actions';
+import SocialLogin from './SocialLogin';
 
-const LoginForm = ({ handleSubmit, onLogin, error }) => {
+const LoginForm = ({ handleSubmit, onLogin, error, onSocialLogin }) => {
     return (
         <Form size="large" onSubmit={handleSubmit(onLogin)}>
             <Segment>
@@ -25,13 +26,19 @@ const LoginForm = ({ handleSubmit, onLogin, error }) => {
                 <Button fluid size="large" color="teal">
                     Login
                 </Button>
+                <Divider horizontal>Or</Divider>
+                <SocialLogin onSocialLogin={onSocialLogin} />
             </Segment>
         </Form>
     );
 };
 
 const dispatchProps = {
-    onLogin: login
-}
+    onLogin: login,
+    onSocialLogin: socialLogin
+};
 
-export default connect(null, dispatchProps)(reduxForm({ form: 'loginForm' })(LoginForm));
+export default connect(
+    null,
+    dispatchProps
+)(reduxForm({ form: 'loginForm' })(LoginForm));

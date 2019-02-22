@@ -1,12 +1,20 @@
 import React from 'react';
-import { Form, Segment, Button, Label } from 'semantic-ui-react';
+import { Form, Segment, Button, Label, Divider } from 'semantic-ui-react';
 import { Field, reduxForm } from 'redux-form';
 import TextInput from '../common/TextInput';
 import { connect } from 'react-redux';
-import { register } from './actions';
+import { register, socialLogin } from './actions';
 import { combineValidators, isRequired } from 'revalidate';
+import SocialLogin from './SocialLogin';
 
-const RegisterForm = ({ handleSubmit, onRegister, error, invalid, submitting }) => {
+const RegisterForm = ({
+    handleSubmit,
+    onRegister,
+    onSocialLogin,
+    error,
+    invalid,
+    submitting
+}) => {
     return (
         <div>
             <Form size="large" onSubmit={handleSubmit(onRegister)}>
@@ -29,10 +37,21 @@ const RegisterForm = ({ handleSubmit, onRegister, error, invalid, submitting }) 
                         component={TextInput}
                         placeholder="Password"
                     />
-                    {error && <Label basic color="red">{error}</Label>}
-                    <Button disabled={invalid || submitting} fluid size="large" color="teal">
+                    {error && (
+                        <Label basic color="red">
+                            {error}
+                        </Label>
+                    )}
+                    <Button
+                        disabled={invalid || submitting}
+                        fluid
+                        size="large"
+                        color="teal"
+                    >
                         Register
                     </Button>
+                    <Divider horizontal>Or</Divider>
+                    <SocialLogin onSocialLogin={onSocialLogin} />
                 </Segment>
             </Form>
         </div>
@@ -40,8 +59,9 @@ const RegisterForm = ({ handleSubmit, onRegister, error, invalid, submitting }) 
 };
 
 const dispatchProps = {
-    onRegister: register
-}
+    onRegister: register,
+    onSocialLogin: socialLogin
+};
 
 const validate = combineValidators({
     displayName: isRequired('Display name'),
@@ -49,4 +69,7 @@ const validate = combineValidators({
     password: isRequired('Password')
 });
 
-export default connect(null, dispatchProps)(reduxForm({ form: 'registerForm', validate })(RegisterForm));
+export default connect(
+    null,
+    dispatchProps
+)(reduxForm({ form: 'registerForm', validate })(RegisterForm));

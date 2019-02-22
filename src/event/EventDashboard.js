@@ -4,9 +4,9 @@ import EventList from './EventList';
 import { connect } from 'react-redux';
 import { deleteEvent } from './actions';
 import EventActivity from './EventActivity';
+import { firestoreConnect } from 'react-redux-firebase';
 
 function EventDashboard(props) {
-    
     function handleDelete(eventId) {
         props.onDelete(eventId);
     }
@@ -14,10 +14,7 @@ function EventDashboard(props) {
     return (
         <Grid>
             <Grid.Column width={10}>
-                <EventList
-                    events={props.events}
-                    onDelete={handleDelete}
-                />
+                <EventList events={props.events} onDelete={handleDelete} />
             </Grid.Column>
             <Grid.Column width={6}>
                 <EventActivity />
@@ -28,7 +25,7 @@ function EventDashboard(props) {
 
 function mapStateToProps(state) {
     return {
-        events: state.events
+        events: state.firestore.ordered.events
     };
 }
 
@@ -39,4 +36,4 @@ const dispatchProps = {
 export default connect(
     mapStateToProps,
     dispatchProps
-)(EventDashboard);
+)(firestoreConnect([{ collection: 'events' }])(EventDashboard));

@@ -14,3 +14,7 @@ export default function EventList(props) {
         </div>
     );
 }
+
+EventList.defaultProps = {
+    events: []
+};

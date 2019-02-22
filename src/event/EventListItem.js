@@ -1,11 +1,20 @@
 import React from 'react';
 import { Segment, Item, Icon, List, Button } from 'semantic-ui-react';
-import EventListAttendee from './EventListAttendee'
+import EventListAttendee from './EventListAttendee';
 import { Link } from 'react-router-dom';
 import format from 'date-fns/format';
 
 export default function EventListItem(props) {
-    const { id, title, description, date, venue, hostedBy, hostPhotoURL, attendees } = props.event;
+    const {
+        id,
+        title,
+        description,
+        date,
+        venue,
+        hostedBy,
+        hostPhotoURL,
+        attendees
+    } = props.event;
     return (
         <Segment.Group>
             <Segment>
@@ -23,23 +32,38 @@ export default function EventListItem(props) {
             </Segment>
             <Segment>
                 <span>
-                    <Icon name="clock" /> {format(date, 'dddd Do MMM')} at {format(date, 'HH:mm')} |
+                    <Icon name="clock" /> {format(date.toDate(), 'dddd Do MMM')} at{' '}
+                    {format(date.toDate(), 'HH:mm')} |
                     <Icon name="marker" /> {venue}
                 </span>
             </Segment>
             <Segment secondary>
                 <List horizontal>
-                    {attendees.map(attendee => (
-                        <EventListAttendee key={attendee.id} attendee={attendee} />
-                    ))}
+                    {Object.keys(attendees).map(key => {
+                        const attendee = attendees[key];
+                        return (
+                            <EventListAttendee key={key} attendee={attendee} />
+                        );
+                    })}
                 </List>
             </Segment>
             <Segment clearing>
                 <span>{description}</span>
-                <Button as="a" color="red" floated="right" content="Delete" onClick={props.onDelete} />
-                <Button as={Link} to={`/event/${id}`} color="teal" floated="right" content="View" />
+                <Button
+                    as="a"
+                    color="red"
+                    floated="right"
+                    content="Delete"
+                    onClick={props.onDelete}
+                />
+                <Button
+                    as={Link}
+                    to={`/event/${id}`}
+                    color="teal"
+                    floated="right"
+                    content="View"
+                />
             </Segment>
         </Segment.Group>
     );
 }
-

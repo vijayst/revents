@@ -10,6 +10,7 @@ export default function SignedOutMenu(props) {
                 inverted
                 content="Register"
                 style={{ marginLeft: '0.5em' }}
+                onClick={props.onRegister}
             />
         </Menu.Item>
     );

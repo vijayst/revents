@@ -9,11 +9,13 @@ import SettingsDashboard from './settings/SettingsDashboard';
 import NavBar from './nav/NavBar';
 import { Route, Switch } from 'react-router-dom';
 import Home from './home/Home';
+import ModalManager from './modals/ModalManager';
 
 class App extends Component {
     render() {
         return (
             <>
+                <ModalManager />
                 <Switch>
                     <Route path="/" exact component={Home} />
                     <Route

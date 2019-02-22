@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Menu, Container, Button } from 'semantic-ui-react';
 import { NavLink, Link, withRouter } from 'react-router-dom';
 import SignedInMenu from './SignedInMenu';
 import SignedOutMenu from './SignedOutMenu';
+import { connect } from 'react-redux';
+import { openModal } from '../modals/actions';
+import { logout } from '../auth/actions';
 
 function NavBar(props) {
-    const [loggedIn, setLoggedIn] = useState(false);
-
     function handleLogin() {
-        setLoggedIn(true);
+        props.onOpen('LoginModal');
+    }
+
+    function handleRegister() {
+        props.onOpen('RegisterModal');
     }
 
     function handleLogout() {
-        setLoggedIn(false);
+        props.onLogout();
         props.history.push('/');
     }
 
+    const { loggedIn, currentUser } = props;
     return (
         <Menu inverted fixed="top">
             <Container>
@@ -40,13 +46,25 @@ function NavBar(props) {
                     </>
                 )}
                 {loggedIn ? (
-                    <SignedInMenu onLogout={handleLogout} />
+                    <SignedInMenu currentUser={currentUser} onLogout={handleLogout} />
                 ) : (
-                    <SignedOutMenu onLogin={handleLogin} />
+                    <SignedOutMenu onLogin={handleLogin} onRegister={handleRegister} />
                 )}
             </Container>
         </Menu>
     );
 }
 
-export default withRouter(NavBar);
+function mapState(state) {
+    return {
+        loggedIn: state.auth.loggedIn,
+        currentUser: state.auth.currentUser
+    }
+}
+
+const dispatchProps = {
+    onOpen: openModal,
+    onLogout: logout
+};
+
+export default connect(mapState, dispatchProps)(withRouter(NavBar));

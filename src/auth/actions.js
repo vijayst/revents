@@ -1,20 +1,22 @@
-import { LOGIN, LOGOUT } from './constants';
 import { closeModal } from '../modals/actions';
+import firebase from '../common/firebase';
+import { SubmissionError } from 'redux-form';
 
 export function login(credentials) {
-    return dispatch => {
-        dispatch({
-            type: LOGIN,
-            payload: {
-                credentials
-            }
-        });
-        dispatch(closeModal());
+    return async dispatch => {
+        try {
+            const { email, password } = credentials;
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+            dispatch(closeModal());
+        } catch (err) {
+            console.log(err);
+            throw new SubmissionError({ _error: err.message });
+        }
     };
 }
 
 export function logout() {
-    return {
-        type: LOGOUT
+    return dispatch => {
+        firebase.auth().signOut();
     };
 }

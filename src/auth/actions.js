@@ -20,3 +20,27 @@ export function logout() {
         firebase.auth().signOut();
     };
 }
+
+export function register(formValues) {
+    return async (dispatch, getState, getFirestore) => {
+        try {
+            const firestore = getFirestore();
+            const result = await firebase.auth().createUserWithEmailAndPassword(
+                formValues.email,
+                formValues.password
+            );
+            await result.user.updateProfile({
+                displayName: formValues.displayName
+            });
+            const userProfile = {
+                displayName: formValues.displayName,
+                createdAt: firestore.FieldValue.serverTimestamp()
+            };
+            await firestore.set(`users/${result.user.uid}`, userProfile);
+            dispatch(closeModal());
+        } catch (err) {
+            console.log(err);
+            throw new SubmissionError({ _error: err.message });
+        }
+    };
+}

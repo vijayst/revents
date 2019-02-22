@@ -2,6 +2,7 @@ import React from 'react';
 import { Segment, Item, Icon, List, Button } from 'semantic-ui-react';
 import EventListAttendee from './EventListAttendee'
 import { Link } from 'react-router-dom';
+import format from 'date-fns/format';
 
 export default function EventListItem(props) {
     const { id, title, description, date, venue, hostedBy, hostPhotoURL, attendees } = props.event;
@@ -22,7 +23,7 @@ export default function EventListItem(props) {
             </Segment>
             <Segment>
                 <span>
-                    <Icon name="clock" /> {date} |
+                    <Icon name="clock" /> {format(date, 'dddd Do MMM')} at {format(date, 'HH:mm')} |
                     <Icon name="marker" /> {venue}
                 </span>
             </Segment>

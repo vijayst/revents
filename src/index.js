@@ -18,7 +18,8 @@ const store = configureStore();
 const config = {
     userProfile: 'users',
     attachAuthIsReady: true,
-    useFirestoreForProfile: true
+    useFirestoreForProfile: true,
+    updateProfileOnLogin: false
 };
 
 ReactDOM.render(

@@ -48,13 +48,22 @@ export function register(formValues) {
 }
 
 export function socialLogin(selectedProvider) {
-    return async dispatch => {
+    return async (dispatch, getState, getFirestore) => {
         try {
             dispatch(closeModal());
-            await firebase.login({
+            const user = await firebase.login({
                 provider: selectedProvider,
                 type: 'popup'
             });
+            if (user.additionalUserInfo.isNewUser) {
+                const firestore = getFirestore();
+                const userProfile = {
+                    displayName: user.profile.displayName,
+                    photoURL: user.profile.avatarUrl,
+                    createdAt: firestore.FieldValue.serverTimestamp()
+                };
+                await firestore.set(`users/${user.user.uid}`, userProfile);
+            }
         } catch (err) {
             console.log(err);
         }

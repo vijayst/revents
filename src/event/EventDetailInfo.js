@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Segment, Grid, Icon, Button } from 'semantic-ui-react';
 import EventDetailMap from './EventDetailMap';
 import format from 'date-fns/format';
@@ -10,6 +10,12 @@ export default function EventDetailInfo(props) {
     function handleToggleMap() {
         setShowMap(!showMap);
     }
+
+    useEffect(() => {
+        return () => {
+            setShowMap(false);
+        };
+    }, []);
 
     return (
         <Segment.Group>
@@ -29,7 +35,10 @@ export default function EventDetailInfo(props) {
                         <Icon name="calendar" size="large" color="teal" />
                     </Grid.Column>
                     <Grid.Column width={15}>
-                        <span>{format(date, 'ddd Do MMM')} at {format(date, 'h:mm A')}</span>
+                        <span>
+                            {format(date, 'ddd Do MMM')} at{' '}
+                            {format(date, 'h:mm A')}
+                        </span>
                     </Grid.Column>
                 </Grid>
             </Segment>
@@ -42,7 +51,12 @@ export default function EventDetailInfo(props) {
                         <span>{venue}</span>
                     </Grid.Column>
                     <Grid.Column width={4}>
-                        <Button color="teal" size="tiny" content={showMap ? 'Hide Map' : 'Show Map'} onClick={handleToggleMap} />
+                        <Button
+                            color="teal"
+                            size="tiny"
+                            content={showMap ? 'Hide Map' : 'Show Map'}
+                            onClick={handleToggleMap}
+                        />
                     </Grid.Column>
                 </Grid>
             </Segment>

@@ -3,6 +3,7 @@ import { Grid } from 'semantic-ui-react';
 import EventList from './EventList';
 import { connect } from 'react-redux';
 import { deleteEvent } from './actions';
+import EventActivity from './EventActivity';
 
 function EventDashboard(props) {
     
@@ -19,6 +20,7 @@ function EventDashboard(props) {
                 />
             </Grid.Column>
             <Grid.Column width={6}>
+                <EventActivity />
             </Grid.Column>
         </Grid>
     );

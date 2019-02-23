@@ -15,7 +15,7 @@ function SettingsDashboard(props) {
             <Grid.Column width="12">
                 <Switch>
                     <Redirect exact from="/settings" to="/settings/basics" />
-                    <Route path="/settings/basics" component={Basic} />
+                    <Route path="/settings/basics" render={() => <Basic initialValues={props.user} />} />
                     <Route path="/settings/about" component={About} />
                     <Route path="/settings/photos" component={Photos} />
                     <Route
@@ -37,9 +37,10 @@ function SettingsDashboard(props) {
 }
 
 function mapState(state) {
-    const { auth } = state.firebase;
+    const { auth, profile } = state.firebase;
     return {
-        providerId: auth.isLoaded && auth.providerData[0].providerId
+        providerId: auth.isLoaded && auth.providerData[0].providerId,
+        user: profile
     };
 }
 

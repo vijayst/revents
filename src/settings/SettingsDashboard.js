@@ -25,7 +25,15 @@ function SettingsDashboard(props) {
                             />
                         )}
                     />
-                    <Route path="/settings/about" component={About} />
+                    <Route
+                        path="/settings/about"
+                        render={() => (
+                            <About
+                                initialValues={props.user}
+                                onProfileUpdate={props.onProfileUpdate}
+                            />
+                        )}
+                    />
                     <Route path="/settings/photos" component={Photos} />
                     <Route
                         path="/settings/account"

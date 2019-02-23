@@ -79,6 +79,6 @@ function Basic(props) {
     );
 }
 
-export default reduxForm({ form: 'userProfile', enableReinitialize: true })(
+export default reduxForm({ form: 'userProfile', enableReinitialize: true, destroyOnUnmount: false })(
     Basic
 );

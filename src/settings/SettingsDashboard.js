@@ -8,6 +8,7 @@ import Photos from './Photos';
 import Account from './Account';
 import { connect } from 'react-redux';
 import { changePassword } from '../auth/actions';
+import { updateProfile } from './actions';
 
 function SettingsDashboard(props) {
     return (
@@ -15,7 +16,15 @@ function SettingsDashboard(props) {
             <Grid.Column width="12">
                 <Switch>
                     <Redirect exact from="/settings" to="/settings/basics" />
-                    <Route path="/settings/basics" render={() => <Basic initialValues={props.user} />} />
+                    <Route
+                        path="/settings/basics"
+                        render={() => (
+                            <Basic
+                                initialValues={props.user}
+                                onProfileUpdate={props.onProfileUpdate}
+                            />
+                        )}
+                    />
                     <Route path="/settings/about" component={About} />
                     <Route path="/settings/photos" component={Photos} />
                     <Route
@@ -45,7 +54,8 @@ function mapState(state) {
 }
 
 const dispatchProps = {
-    onPasswordChange: changePassword
+    onPasswordChange: changePassword,
+    onProfileUpdate: updateProfile
 };
 
 export default connect(

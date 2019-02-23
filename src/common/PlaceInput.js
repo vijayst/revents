@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Form, Label } from 'semantic-ui-react';
 import PlacesAutoComplete from 'react-places-autocomplete';
 
 export default function PlaceInput(props) {
-    const [address, setAddress] = useState('');
-
-    function handleChange(address) {
-        setAddress(address);
-    }
-
     const {
         input,
         placeholder,
@@ -18,12 +12,14 @@ export default function PlaceInput(props) {
         meta: { touched, error }
     } = props;
 
+    const { value, onChange, ...inputProps } = input;
+
     return (
         <Form.Field error={touched && !!error} width={width}>
             <PlacesAutoComplete
-                inputProps={{ ...input }}
-                value={address}
-                onChange={handleChange}
+                inputProps={inputProps}
+                value={value}
+                onChange={onChange}
                 onSelect={onSelect}
                 searchOptions={options}
             >

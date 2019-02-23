@@ -5,13 +5,23 @@ import DateInput from '../common/DateInput';
 import PlaceInput from '../common/PlaceInput';
 import TextInput from '../common/TextInput';
 import RadioInput from '../common/RadioInput';
+import { subYears } from 'date-fns';
 
 function Basic(props) {
-    const { pristine, submitting } = props;
+    const { pristine, submitting, handleSubmit, onProfileUpdate } = props;
+
+    function handleChange(city) {
+        props.change('city', city);
+    }
+
+    function handleSelect(city) {
+        props.change('city', city);
+    }
+
     return (
         <Segment>
             <Header dividing size="large" content="Basics" />
-            <Form>
+            <Form onSubmit={handleSubmit(onProfileUpdate)}>
                 <Field
                     width={8}
                     name="displayName"
@@ -20,6 +30,7 @@ function Basic(props) {
                     placeholder="Known As"
                 />
                 <Form.Group inline>
+                    <label>Gender :</label>
                     <Field
                         name="gender"
                         type="radio"
@@ -40,10 +51,11 @@ function Basic(props) {
                     name="dateOfBirth"
                     component={DateInput}
                     placeholder="Date of Birth"
-                    dateFormat="YYYY-MM-DD"
+                    dateFormat="YYYY-MM-dd"
                     showYearDropdown
                     showMonthDropdown
                     dropdownMode="select"
+                    maxDate={subYears(new Date(), 18)}
                 />
                 <Field
                     name="city"
@@ -52,6 +64,8 @@ function Basic(props) {
                     label="Female"
                     component={PlaceInput}
                     width={8}
+                    onSelect={handleSelect}
+                    onChange={handleChange}
                 />
                 <Divider />
                 <Button

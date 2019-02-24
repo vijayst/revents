@@ -12,22 +12,48 @@ import {
 import Dropzone from 'react-dropzone';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
+import { uploadProfileImage } from './actions';
+import { connect } from 'react-redux';
+import { toastr } from 'react-redux-toastr';
 
-function Photos() {
+function Photos(props) {
+    const [filename, setFilename] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
 
     const cropper = useRef();
 
     function handleDrop(acceptedFiles) {
         setPreview(URL.createObjectURL(acceptedFiles[0]));
+        console.log(acceptedFiles[0]);
+        setFilename(acceptedFiles[0].name);
     }
 
     function handleCrop() {
         if (typeof cropper.current.getCroppedCanvas() === 'undefined') return;
         cropper.current.getCroppedCanvas().toBlob(blob => {
+            setImage(blob);
             setImageUrl(URL.createObjectURL(blob));
         }, 'image/jpeg');
+    }
+
+    async function handleUpload() {
+        try {
+            await props.onImageUpload(image, filename);
+            handleCancel();
+            toastr.success('Success', 'Image uploaded');
+        }
+        catch(error) {
+            toastr.error('Oops', error.message);
+        }
+    }
+
+    function handleCancel() {
+        setFilename(null);
+        setPreview(null);
+        setImage(null);
+        setImageUrl(null);
     }
 
     return (
@@ -65,7 +91,7 @@ function Photos() {
                             ref={cropper}
                             src={preview}
                             aspectRatio={1}
-                            dragMode='move'
+                            dragMode="move"
                             guides={false}
                             scalable
                             cropBoxMovable
@@ -82,10 +108,19 @@ function Photos() {
                         content="Step 3 - Preview and Upload"
                     />
                     {preview && imageUrl && (
-                        <Image
-                            style={{ minWidth: '200px', minHeight: '200px' }}
-                            src={imageUrl}
-                        />
+                        <div>
+                            <Image
+                                style={{
+                                    minWidth: '200px',
+                                    minHeight: '200px'
+                                }}
+                                src={imageUrl}
+                            />
+                            <Button.Group>
+                                <Button style={{ width: 100 }} positive icon="check" onClick={handleUpload} />
+                                <Button style={{ width: 100 }} icon="close" onClick={handleCancel} />
+                            </Button.Group>
+                        </div>
                     )}
                 </Grid.Column>
             </Grid>
@@ -113,4 +148,11 @@ function Photos() {
     );
 }
 
-export default Photos;
+const dispatchProps = {
+    onImageUpload: uploadProfileImage
+};
+
+export default connect(
+    null,
+    dispatchProps
+)(Photos);

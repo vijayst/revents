@@ -1,5 +1,6 @@
 import firebase from '../common/firebase';
 import { toastr } from 'react-redux-toastr';
+import { setUseProxies } from 'immer';
 
 export function updateProfile(formValues) {
     return async () => {
@@ -10,6 +11,39 @@ export function updateProfile(formValues) {
         } catch(error) {
             console.log(error);
 
+        }
+    }
+}
+
+export function uploadProfileImage(file, filename) {
+    return async (dispatch, getState, getFirestore) => {
+        const user = firebase.auth().currentUser;
+        const path = `${user.uid}/user_images`;
+        const options = { name: filename };
+        const firestore = getFirestore();
+        try {
+            const uploadedFile = await firebase.uploadFile(path, file, null, options);
+            const downloadURL = await uploadedFile.uploadTaskSnapshot.downloadURL;
+            const userDoc = await firestore.get(`users/${user.uid}`);
+            if (!userDoc.data().photoURL) {
+                await firebase.updateProfile({
+                    photoURL: downloadURL
+                });
+                await user.updateProfile({
+                    photoURL: downloadURL
+                });
+            }
+            return await firestore.add({
+                collection: setUseProxies,
+                doc: `users/${user.uid}`,
+                subcollections: [{ collection: 'photos'} ]
+            }, {
+                name: filename,
+                url: downloadURL
+            });
+        } catch(error) {
+            console.log(error);
+            throw new Error('Error in uploading photo');
         }
     }
 }

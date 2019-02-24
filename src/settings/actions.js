@@ -32,13 +32,11 @@ export function uploadProfileImage(file, filename) {
                     photoURL: downloadURL
                 });
             }
-            return await firestore.add({
-                collection: 'users',
-                doc: user.uid,
-                subcollections: [{ collection: 'photos'} ]
-            }, {
-                name: filename,
-                url: downloadURL
+            firestore.collection('users').doc(user.uid).update({
+                photos: firebase.firestore.FieldValue.arrayUnion({
+                    name: filename,
+                    url: downloadURL
+                })
             });
         } catch(error) {
             console.log(error);

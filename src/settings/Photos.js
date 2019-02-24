@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
-import { firestore } from 'firebase';
+
 
 function Photos(props) {
     const [preview, setPreview] = useState(null);

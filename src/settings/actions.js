@@ -1,5 +1,6 @@
 import firebase from '../common/firebase';
 import { toastr } from 'react-redux-toastr';
+import cuid from 'cuid';
 
 export function updateProfile(formValues) {
     return async () => {
@@ -14,10 +15,11 @@ export function updateProfile(formValues) {
     }
 }
 
-export function uploadProfileImage(file, filename) {
+export function uploadProfileImage(file) {
     return async (dispatch, getState, getFirestore) => {
         const user = firebase.auth().currentUser;
         const path = `${user.uid}/user_images`;
+        const filename = cuid();
         const options = { name: filename };
         const firestore = getFirestore();
         try {

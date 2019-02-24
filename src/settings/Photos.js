@@ -15,9 +15,11 @@ import 'cropperjs/dist/cropper.css';
 import { uploadProfileImage } from './actions';
 import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
+import { compose } from 'redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { firestore } from 'firebase';
 
 function Photos(props) {
-    const [filename, setFilename] = useState(null);
     const [preview, setPreview] = useState(null);
     const [image, setImage] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
@@ -26,7 +28,6 @@ function Photos(props) {
 
     function handleDrop(acceptedFiles) {
         setPreview(URL.createObjectURL(acceptedFiles[0]));
-        setFilename(acceptedFiles[0].name);
     }
 
     function handleCrop() {
@@ -39,21 +40,22 @@ function Photos(props) {
 
     async function handleUpload() {
         try {
-            await props.onImageUpload(image, filename);
+            await props.onImageUpload(image);
             handleCancel();
             toastr.success('Success', 'Image uploaded');
-        }
-        catch(error) {
+        } catch (error) {
             toastr.error('Oops', error.message);
         }
     }
 
     function handleCancel() {
-        setFilename(null);
         setPreview(null);
         setImage(null);
         setImageUrl(null);
     }
+
+    let { photoURL, photos } = props;
+    photos = photos.filter(p => p.url !== photoURL);
 
     return (
         <Segment>
@@ -116,8 +118,17 @@ function Photos(props) {
                                 src={imageUrl}
                             />
                             <Button.Group>
-                                <Button style={{ width: 100 }} positive icon="check" onClick={handleUpload} />
-                                <Button style={{ width: 100 }} icon="close" onClick={handleCancel} />
+                                <Button
+                                    style={{ width: 100 }}
+                                    positive
+                                    icon="check"
+                                    onClick={handleUpload}
+                                />
+                                <Button
+                                    style={{ width: 100 }}
+                                    icon="close"
+                                    onClick={handleCancel}
+                                />
                             </Button.Group>
                         </div>
                     )}
@@ -129,29 +140,59 @@ function Photos(props) {
 
             <Card.Group itemsPerRow={5}>
                 <Card>
-                    <Image src="https://randomuser.me/api/portraits/men/20.jpg" />
+                    <Image src={photoURL} />
                     <Button positive>Main Photo</Button>
                 </Card>
-
-                <Card>
-                    <Image src="https://randomuser.me/api/portraits/men/20.jpg" />
-                    <div className="ui two buttons">
-                        <Button basic color="green">
-                            Main
-                        </Button>
-                        <Button basic icon="trash" color="red" />
-                    </div>
-                </Card>
+                {photos && photos.map((p, i) => (
+                    <Card key={i}>
+                        <Image src={p.url} />
+                        <div className="ui two buttons">
+                            <Button basic color="green">
+                                Main
+                            </Button>
+                            <Button basic icon="trash" color="red" />
+                        </div>
+                    </Card>
+                ))}
             </Card.Group>
         </Segment>
     );
+}
+
+function mapState(state) {
+    return {
+        uid: state.firebase.auth.uid,
+        photoURL: state.firebase.profile.photoURL
+    };
+}
+
+function mapState2(state) {
+    const users = state.firestore.ordered.users;
+    return {
+        photos: users && users.length ? users[0].photos : []
+    };
 }
 
 const dispatchProps = {
     onImageUpload: uploadProfileImage
 };
 
-export default connect(
-    null,
-    dispatchProps
+function query(props) {
+    return props.uid
+        ? [
+              {
+                  collection: 'users',
+                  doc: props.uid
+              }
+          ]
+        : [];
+}
+
+export default compose(
+    connect(
+        mapState,
+        dispatchProps
+    ),
+    firestoreConnect(query),
+    connect(mapState2)
 )(Photos);

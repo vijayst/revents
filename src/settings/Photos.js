@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Image,
     Segment,
@@ -10,12 +10,24 @@ import {
     Icon
 } from 'semantic-ui-react';
 import Dropzone from 'react-dropzone';
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
 
 function Photos() {
-    const [files, setFiles] = useState([]);
+    const [preview, setPreview] = useState(null);
+    const [imageUrl, setImageUrl] = useState(null);
+
+    const cropper = useRef();
 
     function handleDrop(acceptedFiles) {
-        setFiles(acceptedFiles);
+        setPreview(URL.createObjectURL(acceptedFiles[0]));
+    }
+
+    function handleCrop() {
+        if (typeof cropper.current.getCroppedCanvas() === 'undefined') return;
+        cropper.current.getCroppedCanvas().toBlob(blob => {
+            setImageUrl(URL.createObjectURL(blob));
+        }, 'image/jpeg');
     }
 
     return (
@@ -47,6 +59,20 @@ function Photos() {
                 <Grid.Column width={1} />
                 <Grid.Column width={4}>
                     <Header sub color="teal" content="Step 2 - Resize image" />
+                    {preview && (
+                        <Cropper
+                            style={{ width: '100%', height: 200 }}
+                            ref={cropper}
+                            src={preview}
+                            aspectRatio={1}
+                            dragMode='move'
+                            guides={false}
+                            scalable
+                            cropBoxMovable
+                            cropBoxResizable
+                            crop={handleCrop}
+                        />
+                    )}
                 </Grid.Column>
                 <Grid.Column width={1} />
                 <Grid.Column width={4}>
@@ -55,12 +81,12 @@ function Photos() {
                         color="teal"
                         content="Step 3 - Preview and Upload"
                     />
-                    {files.length ? (
+                    {preview && imageUrl && (
                         <Image
-                            style={{ minWidth: '200px', maxWidth: '200px' }}
-                            src={URL.createObjectURL(files[0])}
+                            style={{ minWidth: '200px', minHeight: '200px' }}
+                            src={imageUrl}
                         />
-                    ) : null}
+                    )}
                 </Grid.Column>
             </Grid>
 

@@ -55,8 +55,7 @@ function Photos(props) {
 
     let { photoURL, photos, onDelete } = props;
     photos = photos.filter(p => p.url !== photoURL);
-    console.log(photos);
-
+    
     return (
         <Segment>
             <Header dividing size="large" content="Your Photos" />
@@ -173,7 +172,6 @@ function mapState(state) {
 }
 
 function mapState2(state) {
-    console.log('mapState2');
     const users = state.firestore.ordered.users;
     return {
         photos: users && users.length ? users[0].photos : [],

@@ -1,6 +1,5 @@
 import firebase from '../common/firebase';
 import { toastr } from 'react-redux-toastr';
-import { setUseProxies } from 'immer';
 
 export function updateProfile(formValues) {
     return async () => {
@@ -23,7 +22,7 @@ export function uploadProfileImage(file, filename) {
         const firestore = getFirestore();
         try {
             const uploadedFile = await firebase.uploadFile(path, file, null, options);
-            const downloadURL = await uploadedFile.uploadTaskSnapshot.downloadURL;
+            const downloadURL = await uploadedFile.uploadTaskSnapshot.ref.getDownloadURL();
             const userDoc = await firestore.get(`users/${user.uid}`);
             if (!userDoc.data().photoURL) {
                 await firebase.updateProfile({
@@ -34,8 +33,8 @@ export function uploadProfileImage(file, filename) {
                 });
             }
             return await firestore.add({
-                collection: setUseProxies,
-                doc: `users/${user.uid}`,
+                collection: 'users',
+                doc: user.uid,
                 subcollections: [{ collection: 'photos'} ]
             }, {
                 name: filename,

@@ -26,7 +26,6 @@ function Photos(props) {
 
     function handleDrop(acceptedFiles) {
         setPreview(URL.createObjectURL(acceptedFiles[0]));
-        console.log(acceptedFiles[0]);
         setFilename(acceptedFiles[0].name);
     }
 

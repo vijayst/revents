@@ -12,12 +12,11 @@ import {
 import Dropzone from 'react-dropzone';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { uploadProfileImage } from './actions';
+import { uploadProfileImage, deletePhoto } from './actions';
 import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
 import { compose } from 'redux';
 import { firestoreConnect } from 'react-redux-firebase';
-
 
 function Photos(props) {
     const [preview, setPreview] = useState(null);
@@ -54,8 +53,9 @@ function Photos(props) {
         setImageUrl(null);
     }
 
-    let { photoURL, photos } = props;
+    let { photoURL, photos, onDelete } = props;
     photos = photos.filter(p => p.url !== photoURL);
+    console.log(photos);
 
     return (
         <Segment>
@@ -143,17 +143,23 @@ function Photos(props) {
                     <Image src={photoURL} />
                     <Button positive>Main Photo</Button>
                 </Card>
-                {photos && photos.map((p, i) => (
-                    <Card key={i}>
-                        <Image src={p.url} />
-                        <div className="ui two buttons">
-                            <Button basic color="green">
-                                Main
-                            </Button>
-                            <Button basic icon="trash" color="red" />
-                        </div>
-                    </Card>
-                ))}
+                {photos &&
+                    photos.map((p, i) => (
+                        <Card key={i}>
+                            <Image src={p.url} />
+                            <div className="ui two buttons">
+                                <Button basic color="green">
+                                    Main
+                                </Button>
+                                <Button
+                                    basic
+                                    icon="trash"
+                                    color="red"
+                                    onClick={onDelete.bind(null, p.name, p.url)}
+                                />
+                            </div>
+                        </Card>
+                    ))}
             </Card.Group>
         </Segment>
     );
@@ -167,14 +173,17 @@ function mapState(state) {
 }
 
 function mapState2(state) {
+    console.log('mapState2');
     const users = state.firestore.ordered.users;
     return {
-        photos: users && users.length ? users[0].photos : []
+        photos: users && users.length ? users[0].photos : [],
+        photoCount: users && users.length ? users[0].photos.length : 0
     };
 }
 
 const dispatchProps = {
-    onImageUpload: uploadProfileImage
+    onImageUpload: uploadProfileImage,
+    onDelete: deletePhoto
 };
 
 function query(props) {

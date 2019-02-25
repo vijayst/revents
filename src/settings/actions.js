@@ -78,3 +78,14 @@ export function deletePhoto(name, url) {
     };
 }
 
+export function setMainPhoto(photoURL) {
+    return async () => {
+        try {
+            await firebase.updateProfile({
+                photoURL
+            });
+        } catch(err) {
+            console.log(err);
+        }
+    }
+}

@@ -12,7 +12,7 @@ import {
 import Dropzone from 'react-dropzone';
 import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
-import { uploadProfileImage, deletePhoto } from './actions';
+import { uploadProfileImage, deletePhoto, setMainPhoto } from './actions';
 import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
 import { compose } from 'redux';
@@ -53,7 +53,7 @@ function Photos(props) {
         setImageUrl(null);
     }
 
-    let { photoURL, photos, onDelete } = props;
+    let { photoURL, photos, onDelete, onMain } = props;
     photos = photos.filter(p => p.url !== photoURL);
     
     return (
@@ -147,7 +147,7 @@ function Photos(props) {
                         <Card key={i}>
                             <Image src={p.url} />
                             <div className="ui two buttons">
-                                <Button basic color="green">
+                                <Button basic color="green" onClick={onMain.bind(null, p.url)}>
                                     Main
                                 </Button>
                                 <Button
@@ -181,7 +181,8 @@ function mapState2(state) {
 
 const dispatchProps = {
     onImageUpload: uploadProfileImage,
-    onDelete: deletePhoto
+    onDelete: deletePhoto,
+    onMain: setMainPhoto
 };
 
 function query(props) {

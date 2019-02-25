@@ -139,7 +139,7 @@ function Photos(props) {
 
             <Card.Group itemsPerRow={5}>
                 <Card>
-                    <Image src={photoURL} />
+                    <Image src={photoURL || '/assets/user.png'} />
                     <Button positive>Main Photo</Button>
                 </Card>
                 {photos &&

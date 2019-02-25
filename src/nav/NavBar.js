@@ -21,7 +21,7 @@ function NavBar(props) {
         props.history.push('/');
     }
 
-    const { loggedIn, profile } = props;
+    const { loggedIn, profile, uid } = props;
     return (
         <Menu inverted fixed="top">
             <Container>
@@ -46,7 +46,7 @@ function NavBar(props) {
                     </>
                 )}
                 {loggedIn ? (
-                    <SignedInMenu profile={profile} onLogout={handleLogout} />
+                    <SignedInMenu uid={uid} profile={profile} onLogout={handleLogout} />
                 ) : (
                     <SignedOutMenu onLogin={handleLogin} onRegister={handleRegister} />
                 )}
@@ -58,9 +58,11 @@ function NavBar(props) {
 function mapState(state) {
     const { auth, profile } = state.firebase;
     const loggedIn = auth.isLoaded && !auth.isEmpty;
+    const uid = auth.isLoaded && auth.uid;
     return {
         loggedIn,
-        profile
+        profile,
+        uid
     }
 }
 

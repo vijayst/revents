@@ -17,6 +17,11 @@ import { firestoreConnect } from 'react-redux-firebase';
 import { format, differenceInYears } from 'date-fns';
 
 function UserDetailedPage(props) {
+
+    function handleEdit() {
+        props.history.push('/settings/basics');
+    }
+
     const {
         user: {
             displayName,
@@ -32,6 +37,7 @@ function UserDetailedPage(props) {
     } = props;
     const age =
         dateOfBirth && differenceInYears(new Date(), new Date(dateOfBirth));
+
     return (
         <Grid>
             <Grid.Column width={16}>
@@ -104,7 +110,7 @@ function UserDetailedPage(props) {
             </Grid.Column>
             <Grid.Column width={4}>
                 <Segment>
-                    <Button color="teal" fluid basic content="Edit Profile" />
+                    <Button onClick={handleEdit} color="teal" fluid basic content="Edit Profile" />
                 </Segment>
             </Grid.Column>
 
